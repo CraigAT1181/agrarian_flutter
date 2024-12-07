@@ -5,6 +5,9 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userDetails = ModalRoute.of(context)?.settings.arguments as Map?;
+    print('User Details: $userDetails');
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Agrarian'),
@@ -13,11 +16,18 @@ class Home extends StatelessWidget {
         centerTitle: true,
         actions: const [Text('Login ł '), Text('Register')],
       ),
-      body: const Padding(
-        padding: EdgeInsets.fromLTRB(10, 16, 10, 0),
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 16, 10, 0),
         child: Center(
           child: Column(
-            children: [Text('Hello')],
+            children: [
+              Text(
+                userDetails != null
+                    ? 'Welcome, ${userDetails['user_name'] ?? 'User'}'
+                    : 'Welcome to Agrarian!',
+                style: const TextStyle(fontSize: 20),
+              ),
+            ],
           ),
         ),
       ),

@@ -4,20 +4,24 @@ class SupabaseService {
   final supabase = Supabase.instance.client;
 
   // Login
-  Future<AuthResponse> userLogin(String email, String password) async {
+  Future<Map> userLogin(String email, String password) async {
     try {
       final response = await supabase.auth.signInWithPassword(
         email: email,
         password: password,
       );
 
-      if (response.user == null) {
-        throw Exception('Login failed. User not found.');
-      }
+      final user = response.user;
 
-      print('User: ${response.user}');
-      print('Session: ${response.session}');
-      return response;
+      if (user == null) throw Exception('Login failed. User not found.');
+
+      final userDetails = await supabase
+          .from("users")
+          .select("*, towns(town_name), allotments(allotment_name) ")
+          .eq("auth_user_id", user.id)
+          .single();
+
+      return userDetails;
     } catch (e) {
       throw Exception('An error occurred: $e');
     }

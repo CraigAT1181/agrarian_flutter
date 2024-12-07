@@ -23,10 +23,24 @@ class _LoginState extends State<Login> {
   // Function to handle form submission
   Future<void> submitForm() async {
     if (formKey.currentState?.validate() ?? false) {
-      await supabaseService.userLogin(
-        emailController.text,
-        passwordController.text,
-      );
+      try {
+        final userDetails = await supabaseService.userLogin(
+          emailController.text,
+          passwordController.text,
+        );
+
+        if (!mounted) return; // Used follow an await
+
+        if (userDetails.isNotEmpty) {
+          Navigator.pushNamed(context, "/", arguments: userDetails);
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Login failed. Please try again.')),
+          );
+        }
+      }
     }
   }
 
